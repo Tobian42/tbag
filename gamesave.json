@@ -1,0 +1,12 @@
+{
+    "world": {
+        "placeholder": 3
+    },
+    "player": {
+        "hp": 10,
+        "xp": 0
+    },
+    "game": {
+        "last-save": "01.01.1960"
+    }
+}
