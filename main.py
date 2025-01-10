@@ -29,7 +29,6 @@ while True:
     sprint('tux', f'Hallo Welt: {hp, xp}')
   hp -= 1
 
-
 clear_console()
 time.sleep(1)
 sprint('tux', 'Sieht so aus als wärst du gestorben :/ \nVersuch es nochmal!')
