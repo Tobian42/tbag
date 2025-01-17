@@ -1,3 +1,4 @@
 __pycache__/
-.venv
+.venv/
 gamesave.json
+test.py

@@ -1,1 +1,2 @@
 cowsay==6.1
+sshkeyboard==2.3.1
