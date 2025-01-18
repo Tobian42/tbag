@@ -1,9 +1,7 @@
-import os
-import sys
-import time
-import cowsay
-import sshkeyboard
+import os, sys, time, math, cowsay, sshkeyboard
+from config import readtime
 
+index = 0
 msg_memory = []
 
 def sprint(msg, chr = None, clearcons = True): # Print text slowly (and with cowsay)
@@ -20,20 +18,22 @@ def nprint(msg): # Print text and log it
    print(msg)
 
 def bprint(msg, title = ''): # Print text inside a box
-    content = ''
-    size = 20
-    addtitlel = max(math.ceil((size - len(title)) / 2 ), 2)
-    addtitler = max(math.floor((size - len(title)) / 2 ), 2)
-    sort = sorted(msg.items())
-    for index, (item, quantity) in enumerate(sort, start=1):
-        addspace = max(size - (3 + len(item) + len(str(quantity))), 2)
-        content = content + f'│ [{index}] │ {item}: {quantity}{' '*addspace}│\n'
+   global index
+   content = '' 
+   size = 20
+   addtitlel = max(math.ceil((size - len(title)) / 2 ), 2)
+   addtitler = max(math.floor((size - len(title)) / 2 ), 2)
+   sort = sorted(msg.items())
+   for item, quantity in sort:
+      addspace = max(size - (3 + len(item) + len(str(quantity))), 2)
+      content = content + f'│ [{index}] │ {item}: {quantity}{' '*addspace}│\n'
+      index += 1
 
-    sprint((
-        f'┌─────┬{'─'*addtitlel}{title}{'─'*addtitler}┐\n' +
-        content +
-        f'└─────┴{'─'*(addtitlel + len(title) + addtitler)}┘'
-    ), None, False)
+   sprint((
+     f'┌─────┬{'─'*addtitlel}{title}{'─'*addtitler}┐\n' +
+     content +
+     f'└─────┴{'─'*(addtitlel + len(title) + addtitler)}┘'
+   ), None, False)
 
 
 def termlog(action, msg = None):
@@ -58,8 +58,26 @@ def clear(log = False):
    if log: termlog('clear')
 
 
-def inventory(action, item = None):
+def inventory(Inventory, action, item = None):
    if action == 'show':
-      pass
+      clear()
+      while True:
+         global index; index = 1
+         items = []
+         for category in Inventory.keys():
+            bprint(Inventory[category], category)
+            sort = sorted(Inventory[category].items())
+            for item, quantity in sort:
+               items.append(item)
+         choosen = input('\nChoose an Item\n>>>')
+         try:
+            choosen = int(choosen)
+            print(items[choosen - 1])
+         except:
+            print('Please enter a valid number!')
+         time.sleep(readtime)
+         clear()
+            
    else:
       print(f'an invalid action was called! "{action}"')
+   return Inventory

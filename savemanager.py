@@ -8,35 +8,37 @@ readtime = 1
 
 
 def SetDefaultData():
+    Inventory = {
+        "Food": {
+            "Apple": 3,
+            "Banana": 4
+        },
+        "Weapons": {
+            "Wooden Sword": 300
+        }
+    },
     hp = 100
     xp = 0
-    SaveGame(hp, xp)
+    SaveGame(Inventory, hp, xp)
+    print('Succsessfully saved default Values')
 
-def SaveGame(hp, xp):
+def SaveGame(Inventory, hp, xp):
     Configuration = {
-        "world": {
-            "placeholder": 3
-        },
-        "player": {
-            "hp": hp,
-            "xp": xp
-        },
-        "inventory": {
-            "Food": {
-                "Banana": 4,
-                "Apple": 3
-            },
-            "Weapons": {
-                "Wooden Sword": 300
-            }
-        },
         "game": {
-            "tutorial": False,
             "last-save": datetime.today().strftime('%d-%m-%Y')
+        },
+        "inventory": Inventory,
+        "player": {
+            "hp": 100,
+            "xp": 0
+        },
+        "world": {
+            "tutorial": False
         }
     }
+
     with open(file_name, 'w') as json_file:
-        json.dump(Configuration, json_file, indent=4)
+         json.dump(Configuration, json_file, sort_keys = True, indent = 4)
 
 def LoadGame():
     while True:
@@ -51,11 +53,12 @@ def LoadGame():
             InventoryData = Configuration["inventory"]
             GameData = Configuration["game"]
 
+            Inventory = InventoryData[0]
             hp = PlayerData["hp"]
             xp = PlayerData["xp"]
-            tutorial = GameData["tutorial"]
+            tutorial = WorldData["tutorial"]
 
-            return(hp, xp, tutorial)
+            return(Inventory, hp, xp, tutorial)
         except FileNotFoundError:
             print('No save file found!')
             time.sleep(readtime)
@@ -66,6 +69,3 @@ def LoadGame():
             else:
                 print('exiting...')
                 exit()
-
-def SaveGame():
-    pass

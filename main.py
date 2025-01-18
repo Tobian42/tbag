@@ -1,13 +1,14 @@
 print('Loading..')
 # imports
 from functions import *
-from savemanager import LoadGame, readtime
+from savemanager import LoadGame
+from config import readtime
 import time
 
 # load game save
 time.sleep(readtime)
-hp, xp, tutorial = LoadGame()
-print('Loaded sucsessffully!')
+Inventory, hp, xp, tutorial = LoadGame()
+print('Save file loaded sucsessffully!')
 time.sleep(readtime)
 clear()
 
@@ -28,7 +29,7 @@ while True:
         sprint('Lets start with the Basics! Here is an apple, try to eat it.', 'tux')
         nprint('(Press "e" to open your inventory)')
         keyinput("e")
-        inventory('show')
+        Inventory = inventory(Inventory, 'show')
   
 
 
