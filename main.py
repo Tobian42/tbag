@@ -15,8 +15,8 @@ clear()
 
 while True:
   if not tutorial:
-    ans = input('Do you want to start the tutorial? [Y/n]\n>>>')
-    if ans == 'N' or ans == 'n':
+    ans = input('Do you want to start the tutorial? [Y/n]\n>>>').lower()
+    if ans == 'n':
         nprint('Skipping the tutorial..')
         time.sleep(readtime)
         tutorial = True

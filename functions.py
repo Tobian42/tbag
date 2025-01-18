@@ -1,5 +1,5 @@
 import os, sys, time, math, cowsay, sshkeyboard
-from config import readtime
+from config import readtime, itemmap
 
 index = 0
 msg_memory = []
@@ -60,23 +60,39 @@ def clear(log = False):
 
 def inventory(Inventory, action, item = None):
    if action == 'show':
+      step = 1
       clear()
       while True:
-         global index; index = 1
-         items = []
-         for category in Inventory.keys():
-            bprint(Inventory[category], category)
-            sort = sorted(Inventory[category].items())
-            for item, quantity in sort:
-               items.append(item)
-         choosen = input('\nChoose an Item\n>>>')
-         try:
-            choosen = int(choosen)
-            print(items[choosen - 1])
-         except:
-            print('Please enter a valid number!')
-         time.sleep(readtime)
-         clear()
+         if step == 1:
+            global index; index = 1
+            items = []
+            for category in Inventory.keys():
+               bprint(Inventory[category], category)
+               sort = sorted(Inventory[category].items())
+               for item, quantity in sort:
+                  items.append(item)
+            try:
+               choosen = input('\nChoose an Item\n>>>')
+               item = items[int(choosen) - 1]
+               itemtype = itemmap[item]
+               step = 2
+            except:
+               print('Please enter a valid number')
+               time.sleep(readtime)
+               clear()
+         elif step == 2:
+            print(f'Choose an action for {item}:')
+            if itemtype == 'Food':
+               print('[E]at [D]elete')
+            elif itemtype == 'Weapons':
+               print('[A]ttack [D]elete')
+            use = input('>>>').lower()
+            if use == 'a':
+               pass
+            elif use == 'd':
+               pass
+            elif use == 'e':
+               pass
             
    else:
       print(f'an invalid action was called! "{action}"')
