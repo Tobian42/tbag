@@ -1,7 +1,7 @@
 import json
 import time
 from datetime import datetime
-from functions import clear_console
+from functions import clear
 
 file_name = "gamesave.json"
 readtime = 1
@@ -21,6 +21,15 @@ def SaveGame(hp, xp):
             "hp": hp,
             "xp": xp
         },
+        "inventory": {
+            "Food": {
+                "Banana": 4,
+                "Apple": 3
+            },
+            "Weapons": {
+                "Wooden Sword": 300
+            }
+        },
         "game": {
             "tutorial": False,
             "last-save": datetime.today().strftime('%d-%m-%Y')
@@ -39,6 +48,7 @@ def LoadGame():
             # Sort the data
             WorldData = Configuration["world"]
             PlayerData = Configuration["player"]
+            InventoryData = Configuration["inventory"]
             GameData = Configuration["game"]
 
             hp = PlayerData["hp"]
@@ -49,7 +59,7 @@ def LoadGame():
         except FileNotFoundError:
             print('No save file found!')
             time.sleep(readtime)
-            clear_console()
+            clear(log = True)
             ans = input('Do you to create a new save file? [Y/n]\n>>>')
             if ans == 'Y' or ans == 'y':
                 SetDefaultData()
@@ -57,5 +67,5 @@ def LoadGame():
                 print('exiting...')
                 exit()
 
-    
-    
+def SaveGame():
+    pass
