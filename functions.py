@@ -1,99 +1,121 @@
 import os, sys, time, math, cowsay, sshkeyboard
 from config import readtime, itemmap
 
-index = 0
 msg_memory = []
+index = 1
 
-def sprint(msg, chr = None, clearcons = True): # Print text slowly (and with cowsay)
-   if clearcons: clear(log = True)
-   if chr: str = cowsay.get_output_string(chr, msg)
-   else: str = msg
-   for c in str + '\n':
-     sys.stdout.write(c)
-     sys.stdout.flush()
-     time.sleep(.005)
-
-def nprint(msg): # Print text and log it
-   termlog('save', msg)
-   print(msg)
-
-def bprint(msg, title = ''): # Print text inside a box
+# Print a dict in a box with indexes
+def boxPrint(content, title = None, slow = True, save = True, clear = 'all'):
    global index
-   content = '' 
+   formatedContent = ''
    size = 20
    addtitlel = max(math.ceil((size - len(title)) / 2 ), 2)
    addtitler = max(math.floor((size - len(title)) / 2 ), 2)
-   sort = sorted(msg.items())
+   sort = sorted(content.items())
+
    for item, quantity in sort:
       addspace = max(size - (3 + len(item) + len(str(quantity))), 2)
-      content = content + f'│ [{index}] │ {item}: {quantity}{' '*addspace}│\n'
+      formatedContent = formatedContent + f'│ [{index}] │ {item}: {quantity}{' '*addspace}│\n'
       index += 1
 
-   sprint((
-     f'┌─────┬{'─'*addtitlel}{title}{'─'*addtitler}┐\n' +
-     content +
-     f'└─────┴{'─'*(addtitlel + len(title) + addtitler)}┘'
-   ), None, False)
+   content = (f'┌─────┬{'─'*addtitlel}{title}{'─'*addtitler}┐\n' +
+      formatedContent +
+      f'└─────┴{'─'*(addtitlel + len(title) + addtitler)}┘')
 
+   if clear:
+      if clear == 'all': clearFunc(True)
+      elif clear == 'console': clearFunc()
+      elif clear == 'log': savePrint('clear')
+   if slow: slowPrint(content, False)
+   else:
+      print(content)
+      if save: savePrint('save', content)
 
-def termlog(action, msg = None):
+# Print a text using cowsay
+def cowPrint(character, content, slow = True, save = True):
+   content = cowsay.get_output_string(character, content)
+
+   if slow:
+      slowPrint(content, slow)
+   else:
+      print(content)
+      if save: savePrint('save', content)
+
+# Save text and print it
+def savePrint(action, content = None, slow = False):
    global msg_memory
-   if action == 'save':
-      msg_memory.append(msg)
-      return True
+
+   if action == 'save' and content:
+      msg_memory.append(content)
    elif action == 'clear':
       msg_memory = []
-      return True
    elif action == 'load':
-      return("\n".join(msg_memory))
+      if content == 'clear': clearFunc()
+      slowPrint("\n".join(msg_memory), False)
    else:
       return False
+   return True
 
-def keyinput(target_key):
-    def press(key): pass
-    while sshkeyboard.listen_keyboard(on_press=press, until=target_key): pass
+# Print text slowly
+def slowPrint(content, save = True, speed = 1):
+   global readtime
+   sleeptime = readtime * speed
+   if save: savePrint('save', content)
 
-def clear(log = False):
+   for c in content + '\n':
+      sys.stdout.write(c)
+      sys.stdout.flush()
+      time.sleep(sleeptime / 200)
+
+# clear console
+def clearFunc(log = False):
+   if log: savePrint('clear')
    os.system('clear')
-   if log: termlog('clear')
 
+# Wait for a specif key pressed
+def keyinput(targetKey):
+   def press(key): pass
+   while sshkeyboard.listen_keyboard(
+      on_press=press, until=target_key):pass
 
+# Inventory actions
 def inventory(Inventory, action, item = None):
    if action == 'show':
       step = 1
-      clear()
+      clearFunc()
       while True:
          if step == 1:
             global index; index = 1
             items = []
+            slowPrint('Inventory:', False, 5)
             for category in Inventory.keys():
-               bprint(Inventory[category], category)
+               boxPrint(Inventory[category], category, True, False, False)
                sort = sorted(Inventory[category].items())
                for item, quantity in sort:
                   items.append(item)
+            choosen = input('\nChoose an item (choose 0 to exit)\n>>>')
             try:
-               choosen = input('\nChoose an Item\n>>>')
-               item = items[int(choosen) - 1]
+               choosen = int(choosen)
+               if choosen == 0:
+                  step = 0
+                  savePrint('load', 'clear')
+                  return 'exited'
+               item = items[(choosen -1)]
                itemtype = itemmap[item]
                step = 2
-            except:
-               print('Please enter a valid number')
-               time.sleep(readtime)
-               clear()
+            except ValueError:
+               clearFunc()
+               print('Please input a Number')      
+            except IndexError:
+               clearFunc()
+               print("This Item doesn't exist")
+            except KeyError:
+               clearFunc()
+               print(f'>{item}< does not exist in the itemmap [config.py]\nError(204)')
+               exit('Invalid Item Found')
          elif step == 2:
-            print(f'Choose an action for {item}:')
+            clearFunc()
+            slowPrint(f'Choose what to do with {item};')
             if itemtype == 'Food':
-               print('[E]at [D]elete')
-            elif itemtype == 'Weapons':
-               print('[A]ttack [D]elete')
-            use = input('>>>').lower()
-            if use == 'a':
-               pass
-            elif use == 'd':
-               pass
-            elif use == 'e':
-               pass
-            
-   else:
-      print(f'an invalid action was called! "{action}"')
-   return Inventory
+               slowPrint('[e]at, [d]rop')
+            action = input('>>>').lower()
