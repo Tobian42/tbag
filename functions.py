@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 import os, sys, time, math, cowsay, sshkeyboard
-from config import readtime, itemmap
+from config import *
 
 msg_memory = []
 index = 1
@@ -15,12 +16,13 @@ def boxPrint(content, title = None, slow = True, save = True, clear = 'all'):
 
    for item, quantity in sort:
       addspace = max(size - (3 + len(item) + len(str(quantity))), 2)
-      formatedContent = formatedContent + f'│ [{index}] │ {item}: {quantity}{' '*addspace}│\n'
+      formatedContent = formatedContent + f'│ [{index}] │ {item}: {quantity}{" " * addspace}│\n'
+
       index += 1
 
-   content = (f'┌─────┬{'─'*addtitlel}{title}{'─'*addtitler}┐\n' +
+      content = (f'┌─────┬{"─" * addtitlel}{title}{"─" * addtitler}┐\n' +
       formatedContent +
-      f'└─────┴{'─'*(addtitlel + len(title) + addtitler)}┘')
+      f'└─────┴{"─" * (addtitlel + len(title) + addtitler)}┘')
 
    if clear:
       if clear == 'all': clearFunc(True)
@@ -32,9 +34,13 @@ def boxPrint(content, title = None, slow = True, save = True, clear = 'all'):
       if save: savePrint('save', content)
 
 # Print a text using cowsay
-def cowPrint(character, content, slow = True, save = True):
+def cowPrint(character, content, slow = True, save = True, clear = 'all'):
    content = cowsay.get_output_string(character, content)
-
+   
+   if clear:
+      if clear == 'all': clearFunc(True)
+      elif clear == 'console': clearFunc()
+      elif clear == 'log': savePrint('clear')
    if slow:
       slowPrint(content, slow)
    else:
@@ -72,11 +78,19 @@ def clearFunc(log = False):
    if log: savePrint('clear')
    os.system('clear')
 
-# Wait for a specif key pressed
-def keyinput(targetKey):
-   def press(key): pass
-   while sshkeyboard.listen_keyboard(
-      on_press=press, until=target_key):pass
+# Wait for a specif key pressed or return pressed key
+def keyinput(targetKey = None):
+   if targetKey:
+      def press(key): pass
+      while sshkeyboard.listen_keyboard(on_press=press, until=targetKey): pass
+   else:
+      pressedKey = None
+      def press(key):
+         nonlocal pressedKey
+         pressedKey = key
+         sshkeyboard.stop_listening()
+      sshkeyboard.listen_keyboard(on_press=press)
+      return pressedKey
 
 # Inventory actions
 def inventory(Inventory, action, item = None):
@@ -118,4 +132,7 @@ def inventory(Inventory, action, item = None):
             slowPrint(f'Choose what to do with {item};')
             if itemtype == 'Food':
                slowPrint('[e]at, [d]rop')
-            action = input('>>>').lower()
+            action = keyinput()
+            if action == 'e':
+               gain = foodmap[item]
+               slowPrint(f'You gained {gain} hp')

@@ -1,13 +1,18 @@
+# -*- coding: utf-8 -*-
 import json
 import time
 from datetime import datetime
-from functions import clear
+from functions import clearFunc
 
 file_name = "gamesave.json"
 readtime = 1
 
+hp = 100
+xp = 0
+
 
 def SetDefaultData():
+    global Inventory
     Inventory = {
         "Food": {
             "Apple": 3,
@@ -17,12 +22,14 @@ def SetDefaultData():
             "Wooden Sword": 300
         }
     },
-    hp = 100
-    xp = 0
-    SaveGame(Inventory, hp, xp)
+    SaveGame()
     print('Succsessfully saved default Values')
 
-def SaveGame(Inventory, hp, xp):
+def SaveGame():
+    global Inventory
+    global hp
+    global xp
+    
     Configuration = {
         "game": {
             "last-save": datetime.today().strftime('%d-%m-%Y')
@@ -62,7 +69,7 @@ def LoadGame():
         except FileNotFoundError:
             print('No save file found!')
             time.sleep(readtime)
-            clear(log = True)
+            clearFunc(log = True)
             ans = input('Do you to create a new save file? [Y/n]\n>>>')
             if ans == 'Y' or ans == 'y':
                 SetDefaultData()
