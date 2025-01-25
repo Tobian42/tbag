@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-readtime = 1
+readTime = 1
+saveFile = "gamesave.json"
 
 
 itemmap = {

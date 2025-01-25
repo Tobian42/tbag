@@ -63,9 +63,9 @@ def savePrint(action, content = None, slow = False):
    return True
 
 # Print text slowly
-def slowPrint(content, save = True, speed = 1):
-   global readtime
-   sleeptime = readtime * speed
+def slowPrint(content, save = False, speed = 1):
+   global readTime
+   sleeptime = readTime * speed
    if save: savePrint('save', content)
 
    for c in content + '\n':

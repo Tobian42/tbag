@@ -3,14 +3,14 @@ print('Loading..')
 # imports
 from functions import *
 from savemanager import LoadGame
-from config import readtime
+from config import readTime
 import time
 
 # load game save
-time.sleep(readtime)
-Inventory, hp, xp, tutorial = LoadGame()
+time.sleep(readTime)
+LoadGame()
 print('Save file loaded sucsessffully!')
-time.sleep(readtime)
+time.sleep(readTime)
 clearFunc()
 
 
@@ -20,10 +20,10 @@ while True:
     ans = keyinput()
     if ans == 'n':
         slowPrint('Skipping the tutorial..', False)
-        time.sleep(readtime)
+        time.sleep(readTime)
         tutorial = True
         slowPrint('Tutorial skipped!', False)
-        time.sleep(readtime)
+        time.sleep(readTime)
     else:
         cowPrint('tux', 'Welcome to the tutorial!\nI will be your guide through this game!')
         slowPrint('(Press "enter" to continue)')
