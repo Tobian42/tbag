@@ -5,6 +5,11 @@ Inventory = {}
 hp = None
 xp = None
 
+def SaveGame(Default):
+    if Default: 
+        global Inventory, hp, xp
+        
+
 def LoadGame():
     while True:
         # Open the file
@@ -25,4 +30,4 @@ def LoadGame():
                 time.sleep(config.readTime)
                 exit()
             else:
-                pass
+                SaveGame(Default = True)
